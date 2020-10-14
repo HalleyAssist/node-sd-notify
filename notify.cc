@@ -6,38 +6,25 @@
 #include <systemd/sd-journal.h>
 
 using v8::Number;
-
-#define READY "READY=1"
-#define STOPPING "STOPPING=1"
-#define WATCHDOG "WATCHDOG=1"
-
 namespace notify {
+
+  
+
+void set(const v8::FunctionCallbackInfo<v8::Value>& arg, int pid, const char* status) {
+  int ret = sd_pid_notify(pid, 0, status);
+  args.GetReturnValue().Set(v8::Number::New(isolate, ret));
+}
+
 
 const char* ToCString(const v8::String::Utf8Value& value) {
   return *value ? *value : "STATUS=conversion failed";
 }
 
-void ready(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  int pid = args[0].As<Number>()->Value();
-  sd_pid_notify(pid, 0, READY);
-}
-
-void stopping(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  int pid = args[0].As<Number>()->Value();
-  sd_pid_notify(pid, 0, STOPPING);
-}
-
-void watchdog(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  int pid = args[0].As<Number>()->Value();
-  sd_pid_notify(pid, 0, WATCHDOG);
-}
-
 void sendstate(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  v8::Isolate* isolate = args.GetIsolate();
-  int pid = args[0].As<Number>()->Value();
   v8::String::Utf8Value str(isolate, args[1]);
   const char *state = ToCString(str);
-  sd_pid_notify(pid, 0, state);
+  int pid = args[0].As<Number>()->Value();
+  set(args, pid, READY);
 }
 
 void interval(const v8::FunctionCallbackInfo<v8::Value>& args) {
@@ -63,9 +50,6 @@ void journal_print(const v8::FunctionCallbackInfo<v8::Value>& args) {
 }  // namespace notify
 
 void Init(v8::Local<v8::Object> exports) {
-  NODE_SET_METHOD(exports, "ready", notify::ready);
-  NODE_SET_METHOD(exports, "stopping", notify::stopping);
-  NODE_SET_METHOD(exports, "watchdog", notify::watchdog);
   NODE_SET_METHOD(exports, "watchdogInterval", notify::interval);
   NODE_SET_METHOD(exports, "sendState", notify::sendstate);
   NODE_SET_METHOD(exports, "journalPrint", notify::journal_print);
