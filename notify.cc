@@ -10,8 +10,9 @@ namespace notify {
 
   
 
-void set(const v8::FunctionCallbackInfo<v8::Value>& arg, int pid, const char* status) {
+void set(const v8::FunctionCallbackInfo<v8::Value>& args, int pid, const char* status) {
   int ret = sd_pid_notify(pid, 0, status);
+  v8::Isolate* isolate = args.GetIsolate();
   args.GetReturnValue().Set(v8::Number::New(isolate, ret));
 }
 
@@ -21,10 +22,11 @@ const char* ToCString(const v8::String::Utf8Value& value) {
 }
 
 void sendstate(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::Isolate* isolate = args.GetIsolate();
   v8::String::Utf8Value str(isolate, args[1]);
   const char *state = ToCString(str);
   int pid = args[0].As<Number>()->Value();
-  set(args, pid, READY);
+  set(args, pid, state);
 }
 
 void interval(const v8::FunctionCallbackInfo<v8::Value>& args) {
