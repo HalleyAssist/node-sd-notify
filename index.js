@@ -35,7 +35,7 @@ const log = {
   debug: journalPrint.bind(null, LOG_LEVELS.LOG_DEBUG)
 }
 
-module.exports = Object.assign({}, sdNotify, {
+module.exports = Object.assign(sdNotify, {
   ready: (pid = null) => {
     if(!pid) pid = process.pid
     sdNotify.sendState(pid, "READY=1\n")
