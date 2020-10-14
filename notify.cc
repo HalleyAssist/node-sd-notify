@@ -28,14 +28,16 @@ void stopping(const v8::FunctionCallbackInfo<v8::Value>& args) {
 }
 
 void watchdog(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  sd_notify(0, WATCHDOG);
+  int pid = args[0].As<Number>()->Value();
+  sd_pid_notify(pid, 0, WATCHDOG);
 }
 
 void sendstate(const v8::FunctionCallbackInfo<v8::Value>& args) {
   v8::Isolate* isolate = args.GetIsolate();
-  v8::String::Utf8Value str(isolate, args[0]);
+  int pid = args[0].As<Number>()->Value();
+  v8::String::Utf8Value str(isolate, args[1]);
   const char *state = ToCString(str);
-  sd_notify(0, state);
+  sd_pid_notify(pid, 0, state);
 }
 
 void interval(const v8::FunctionCallbackInfo<v8::Value>& args) {

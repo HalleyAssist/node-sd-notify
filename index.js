@@ -36,13 +36,15 @@ const log = {
 }
 
 module.exports = Object.assign({}, sdNotify, {
-  ready: () => {
-    sdNotify.ready(process.pid)
+  ready: (pid = null) => {
+    if(!pid) pid = process.pid
+    sdNotify.ready(pid)
   },
 
-  startWatchdogMode: (interval) => {
+  startWatchdogMode: (interval, pid = null) => {
     interval = +interval || 3000
-    watchdogTimer = setInterval(sdNotify.watchdog, interval)
+    if(!pid) pid = process.pid
+    watchdogTimer = setInterval(sdNotify.watchdog, interval, pid)
   },
 
   stopWatchdogMode: () => {
@@ -52,8 +54,9 @@ module.exports = Object.assign({}, sdNotify, {
     }
   },
 
-  sendStatus: (text) => {
-    sdNotify.sendState('STATUS=' + text + '\n')
+  sendStatus: (text, pid = null) => {
+    if(!pid) pid = process.pid
+    sdNotify.sendState(pid, 'STATUS=' + text + '\n')
   },
 
   log: log
