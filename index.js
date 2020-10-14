@@ -38,15 +38,15 @@ const log = {
 module.exports = Object.assign({}, sdNotify, {
   ready: (pid = null) => {
     if(!pid) pid = process.pid
-    sdNotify.sendState(pid, 'READY=1\n')
+    sdNotify.sendState(pid, "READY=1\n")
   },
   watchdog: (pid = null) => {
     if(!pid) pid = process.pid
-    sdNotify.sendState(pid, 'WATCHDOG=1\n')
+    sdNotify.sendState(pid, "WATCHDOG=1\n")
   },
   stopping: (pid = null) => {
     if(!pid) pid = process.pid
-    sdNotify.sendState(pid, 'STOPPING=1\n')
+    sdNotify.sendState(pid, "STOPPING=1\n")
   },
 
   startWatchdogMode: (interval, pid = null) => {
